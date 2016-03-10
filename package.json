@@ -1,0 +1,34 @@
+{
+  "name": "sloth-logger",
+  "version": "1.0.0",
+  "description": "Logger with custom levels, formats, output options and more",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "babel source -w --presets babel-preset-es2015 --out-dir lib",
+    "build": "babel source --presets babel-preset-es2015 --out-dir lib",
+    "prepublish": "npm run build"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ansi_up": "^1.3.0",
+    "colors": "^1.1.2",
+    "dateformat": "^1.0.12",
+    "lodash": "^4.6.1",
+    "nodemailer": "^2.3.0",
+    "stripcolorcodes": "^0.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-polyfill": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-es2015-node4": "^2.0.3",
+    "babel-register": "^6.5.1",
+    "jsdoc-babel": "^0.1.0",
+    "pretty-data": "^0.40.0",
+    "tape": "^4.4.0",
+    "xmldom": "^0.1.19",
+    "xpath.js": "^1.0.6"
+  }
+}
