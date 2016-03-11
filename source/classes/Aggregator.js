@@ -8,7 +8,7 @@ class Aggregator {
 
     send() {
         if (this.logs.length > 0) {
-            let msg = this.logs.join('<br/>');
+            let msg = this.logs.join('');
             logHandler.emailLog(this.emailSettings, msg, (err) => {
                 if (err) {
                     console.error(err);

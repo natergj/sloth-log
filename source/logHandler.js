@@ -17,7 +17,7 @@ let emailLog = (settings, msg, cb) => {
             from: settings.from,
             to: settings.to,
             text: stripColorCodes(msg),
-            html: ansiUp.ansi_to_html(msg),
+            html: ansiUp.ansi_to_html(msg.replace(new RegExp('\n', 'g'), '<br/>')),
             subject: 'Message from ' + os.hostname()
         };
 
