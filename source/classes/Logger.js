@@ -7,6 +7,7 @@ let streamOpts = { flags: 'a', encoding: 'UTF-8' };
 
 class Logger {
     constructor(opts) {
+        opts = opts ? opts : {};
         this.defaultLevel = {
             'writeSteam': process.stdout,
             'dateFormat': 'm/dd/yy h:MM:ss TT Z',
@@ -22,11 +23,31 @@ class Logger {
         this.logLevel = opts && typeof(opts.logLevel) === 'number' ? opts.logLevel : 5;
 
         this.levels = {
-            'error': _.merge({}, this.defaultLevel, { color: 'red', 'logLevelThreshold': 1 }),
-            'warn': _.merge({}, this.defaultLevel, { color: 'magenta', 'logLevelThreshold': 2 }),
-            'info': _.merge({}, this.defaultLevel, { color: 'cyan', 'logLevelThreshold': 3 }),
-            'inspect': _.merge({}, this.defaultLevel, { color: 'white', inspect: true, inspectOptions: { showHidden: true, depth: 2, colors: true }, 'logLevelThreshold': 4 }),
-            'debug': _.merge({}, this.defaultLevel, { color: 'yellow', 'logLevelThreshold': 5 })
+            'error': _.merge({}, 
+                this.defaultLevel, 
+                { color: 'red', 'logLevelThreshold': 1 }, 
+                opts.levels && opts.levels.error ? opts.levels.error : {}
+            ),
+            'warn': _.merge({}, 
+                this.defaultLevel, 
+                { color: 'magenta', 'logLevelThreshold': 2 }, 
+                opts.levels && opts.levels.warn ? opts.levels.warn : {}
+            ),
+            'info': _.merge({}, 
+                this.defaultLevel, 
+                { color: 'cyan', 'logLevelThreshold': 3 }, 
+                opts.levels && opts.levels.info ? opts.levels.info : {}
+            ),
+            'inspect': _.merge({}, 
+                this.defaultLevel, 
+                { color: 'white', inspect: true, inspectOptions: { showHidden: true, depth: 2, colors: true }, 'logLevelThreshold': 4 }, 
+                opts.levels && opts.levels.inspect ? opts.levels.inspect : {}
+            ),
+            'debug': _.merge({}, 
+                this.defaultLevel, 
+                { color: 'yellow', 'logLevelThreshold': 5 }, 
+                opts.levels && opts.levels.debug ? opts.levels.debug : {}
+            )
         };
 
         this.emailSettings = opts ? opts.emailSettings : null;
