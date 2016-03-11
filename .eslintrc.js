@@ -17,6 +17,7 @@ module.exports = {
         'keyword-spacing': 2,
         'linebreak-style': [2, 'unix'],
         'no-console': 0,
+        'no-control-regex': 0,
         'no-redeclare': 0,
         'no-underscore-dangle': 0,
         'no-unused-vars': 0,
