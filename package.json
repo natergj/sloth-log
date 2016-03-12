@@ -2,15 +2,29 @@
   "name": "sloth-logger",
   "version": "1.0.0",
   "description": "Logger with custom levels, formats, output options and more",
+  "keywords": [
+    "log",
+    "formatted",
+    "timestamp",
+    "email"
+  ],
   "main": "lib/index.js",
+  "readmeFilename": "README.md",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test ./node_modules/tape/bin/tape -r babel-register ./lib/tests/**/**/*.test.js",
     "watch": "babel source -w --presets babel-preset-es2015 --out-dir lib",
     "build": "babel source --presets babel-preset-es2015 --out-dir lib",
     "prepublish": "npm run build"
   },
-  "author": "",
+  "author": {
+    "name": "Nater",
+    "email": "nater_nater@me.com"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:natergj/sloth-log.git"
+  },
   "dependencies": {
     "ansi_up": "^1.3.0",
     "colors": "^1.1.2",

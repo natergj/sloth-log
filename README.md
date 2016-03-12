@@ -27,75 +27,95 @@ logger.info('Line with variable: %s', 'stringVar');
 [DEBUG][3/10/16 12:20:26 PM EST][log.js:48] Debug Log Line
 [INFO][3/10/16 12:59:26 PM EST][log.js:49] Line with variable: stringVar
 ```
-## Set custom log line format
-Custom log line formats are supported. Format string should be in the format of javascript template literals without the enclosign ` marks. Available options are:   
-logType: type of log (i.e. error, warn, etc) in all caps enclosed with []   
-logDate: formatted date. Uses [dateformat](https://www.npmjs.com/package/dateformat) as formatter and supports custom format. Defaults to 'm/dd/yy h:MM:ss TT Z'   
-fullFilePath: the full path to the file where the logger was called   
-relativeFilePath: the path relative to the current working directory where node was executed   
-line: the line of the file where the logger was called   
-logMessage: the formatted log entry 
+
+## Setting properties of each log level
+Each Log Level contains the following properties. New levels are created with these defaults
 
 ```javascript
-var SlothLogger = require('sloth-logger');
-var logger = new SlothLogger.Logger();
-
-logger.setLogFormat('error', '${logLevel}[${logDate}][${fullFilePath}:${line}] ${logMessage}');
+'destination': process.stdout,
+'dateFormat': 'm/dd/yy h:MM:ss TT Z',
+'color': 'gray',
+'sendEmail': false,
+'inspect': false,
+'inspectOptions': {},
+'logLevelThreshold': 5,
+'format': '${logLevelName}[${logDate}][${relativeFilePath}:${line}] ${logMessage}',
+'aggregator': null  
 ```
 
-### logDate format
-```javascript
-var SlothLogger = require('sloth-logger');
-var logger = new SlothLogger.Logger();
+destination: Takes an instance of an fs.WriteStream or a file path string   
+dateFormat: Takes a date format. Uses [dateformat](https://www.npmjs.com/package/dateformat)   
+color: Takes a color string. Uses [colors](https://www.npmjs.com/package/colors)   
+sendEmail: Takes a Boolean. States whether individual log entries should be emailed   
+inspect: Takes a Boolean. States whether to use util.inspect when printing log entry   
+inspectOptions: Takes an [object](https://nodejs.org/dist/latest-v4.x/docs/api/util.html#util_util_inspect_object_options) to pass to the util.inspect function   
+logLevelThreshold: Takes an integer. Log will only be handled if logLevelThreshold is less than or equal to logger's logLevel      
+aggregator: Takes an Aggregator. If set, sendEmail option is ignored and emails are only sent when aggregotor.send() is called    
+format: Takes and ES2015 template literal style string.   
 
-logger.setLogDateFormat('error', 'dddd, mmmm dS, yyyy, h:MM:ss TT');
+#### Available options for format
+fullFilePath: full path to file calling logger   
+relativeFilePath: path to file relative to the process.cwd   
+line: line of file calling logger   
+logDate: formatting text string of date/time. Uses [dateformat](https://www.npmjs.com/package/dateformat)   
+logLevelName: name of the log level (i.e. error, warn, etc) enclosed in []   
+logMessage: formatted message   
 
-```
-
-## Set log level
-By Default, the log level is set to 5 and the built-in log types have the following log thresholds. By changing the logLevel to 3, only error, warn, and info logs will be logged.
-
-error: 1   
-warn: 2   
-info: 3   
-inspect: 4   
-error: 5   
-
-
-```javascript
-var SlothLogger = require('sloth-logger');
-var logger = new SlothLogger.Logger();
-
-logger.logLevel = 4;
-```
-
-## Set log type log level threshold
-```javascript
-var SlothLogger = require('sloth-logger');
-var logger = new SlothLogger.Logger();
-
-setLogLevelThreshold('info',5);
-```
-
-## Log to file
-You can also specify that you wish to log an individual level to a file rather than the console.
+These settings can be customized when a new SlotLogger is initialized or during runtime. 
+#### Set at initialization
 
 ```javascript
-var SlothLogger = require('sloth-logger');
-var logger = new SlothLogger.Logger();
-logger.setLogFile('error', __dirname + '/logs/error.log');
+let logger = new SlothLogger.Logger({
+    levels: {
+        info: {
+            'destination': 'logs/info.log'
+        },
+        warn: {
+            'destination': 'logs/warn.log'
+        },
+        crit: {
+            'destination': process.stderr,
+            'dateFormat': 'm/dd/yy h:MM:ss TT Z',
+            'logLevelThreshold': 0
+        }
+    }
+});
 ```
-
-## Change console log color
-Colors shown in the color for each log type can be customized
-Available options are: black, red, green, yellow, blue, magenta, cyan, white, gray, grey.
+Note, that if you'd like to add a custom log level, simply add a new object keyed by the name of your new level. The above would create a new logger.crit() function with the specified adjustments to the default log level options.   
+    
+## Set logLevels on a per-file basis
+If you're currently debugging a single file and wish to ignore your debug messages on other files, you can specify a custom log level on a per-file basis.   
+To do this, you will need to set your logger as a global function
 
 ```javascript
-var SlothLogger = require('sloth-logger');
-var logger = new SlothLogger.Logger();
-logger.setLogColor('error', 'orange');
+var SlothLogger = require('../index.js');
+global.logger = new SlothLogger.Logger({
+	logLevel: 1
+});
 ```
 
+Then, at the top of the file that you are debugging, you will specify the log level to a higher number
+
+```javascript
+logger.setLogLevelForThisFile(4);
+```
+
+You can also change the logLevel at runtime if you are debugging a specific section of synchronous code
+
+```javascript
+var SlothLogger = require('../index.js');
+global.logger = new SlothLogger.Logger({
+	logLevel: 1
+});
+
+logger.debug('I will not print');
+logger.logLevel = 5;
+logger.debug('I will print now');
+logger.logLevel = 1;
+logger.debug('I will not print again');
+```
+
+    
 ## Send an email notification for each log item
 By providing your logger with email settings, you can set each log type to send an email every time the logger is called.
 
@@ -125,14 +145,16 @@ var logger = new SlothLogger.Logger({
 	emailSettings: {   
         from: 'noreply@mycompany.com',
         to: 'admin@mycompany.com',
+        subject: 'Error logs from server',
         transportConfig: {
             host: 'smtp.mycompany.com',
             port: 25
         }
     }
 });
+
 var aggregator = new SlothLogger.Aggregator();
-logger.setAggregator('error', aggregator);
+logger.setLevelProps('error', { aggregator: aggregator });
 
 logger.error('add this line to error log');
 aggregator.send();
