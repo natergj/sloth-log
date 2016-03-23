@@ -1,7 +1,7 @@
 {
   "name": "sloth-logger",
-  "version": "1.0.0",
-  "description": "Logger with custom levels, formats, output options and more",
+  "version": "1.0.3",
+  "description": "A happy little logger with custom levels, formats, output options and more",
   "keywords": [
     "log",
     "formatted",

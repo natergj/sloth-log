@@ -1,21 +1,21 @@
 let logHandler = require('../logHandler.js');
 
 class Aggregator {
-    constructor() {
+    constructor(opts) {
         this.logs = [];
-        this.emailSettings = null;
+        this.emailSettings = opts.emailSettings;
     }
 
-    send() {
+    send(cb) {
+        let msg = '';
         if (this.logs.length > 0) {
-            let msg = this.logs.join('');
-            logHandler.emailLog(this.emailSettings, msg, (err) => {
-                if (err) {
-                    console.error(err);
-                }
-            });
+            msg = this.logs.join('');
             this.logs = [];
+        } else {
+            msg = 'There were no logs added to the Aggregator';
         }
+
+        logHandler.emailLog(this.emailSettings, msg, cb);
     }
 
     addLog(msg) {

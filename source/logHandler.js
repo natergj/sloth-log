@@ -27,11 +27,7 @@ let emailLog = (settings, msg, cb) => {
             subject: settings.subject
         };
 
-        transporter.sendMail(data, (err) => {
-            if (err) {
-                return cb(err);
-            }
-        });
+        transporter.sendMail(data, cb);
     });
 };
 

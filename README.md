@@ -153,9 +153,24 @@ var logger = new SlothLogger.Logger({
     }
 });
 
-var aggregator = new SlothLogger.Aggregator();
+var aggregator = new SlothLogger.Aggregator({
+    emailSettings: {   
+        from: 'noreply@mycompany.com',
+        to: 'admin@mycompany.com',
+        subject: 'Aggregated logs from server',
+        transportConfig: {
+            host: 'smtp.mycompany.com',
+            port: 25
+        }
+    }
+});
+
 logger.setLevelProps('error', { aggregator: aggregator });
 
 logger.error('add this line to error log');
-aggregator.send();
+aggregator.send(function(err){
+    if(err){
+        console.error(err);
+    }
+});
 ```

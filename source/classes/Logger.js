@@ -49,12 +49,12 @@ class Logger {
         };
 
         // Add any log levels sent to constructor or update existing log levels
-        if(opts.levels instanceof Object){
+        if (opts.levels instanceof Object) {
             Object.keys(opts.levels).forEach((l) => {
                 if (this.levels[l]) {
-                    this.levels[l] = _.merge(this.levels[l], opts.levels[l] );
+                    this.levels[l] = _.merge(this.levels[l], opts.levels[l]);
                 } else {    
-                    this.levels[l] = _.merge({}, defaultLevel, opts.levels[l] );
+                    this.levels[l] = _.merge({}, defaultLevel, opts.levels[l]);
                 }
             });
         }
@@ -64,7 +64,7 @@ class Logger {
 
         // Generate functions with names of levels to handle logs
         Object.keys(this.levels).forEach((l) => {
-            if(typeof(this.levels[l].destination) === 'string'){
+            if (typeof(this.levels[l].destination) === 'string') {
                 this.levels[l].destination = new fs.createWriteStream(this.levels[l].destination, streamOpts);
             }
 
@@ -85,7 +85,7 @@ class Logger {
 
     setLevelProps(logLevel, props) {
         if (this.levels[logLevel.toLowerCase()]) {
-            this.levels[logLevel.toLowerCase()] = _.merge({}, defaultLevel, this.level[logLevel.toLowerCase()], props);
+            this.levels[logLevel.toLowerCase()] = _.merge({}, defaultLevel, this.levels[logLevel.toLowerCase()], props);
         } else {
             throw new TypeError(`${logLevel} does not exists as an available log level.`);
         }
