@@ -1,5 +1,6 @@
+![Logo](https://raw.githubusercontent.com/natergj/sloth-logger/master/logo.png)
 ## Sloth Logger
-Logger with custom levels, colors, formats, output options and more
+A happy little logger with custom levels, colors, formats, output options and more
 
 ## Installation
 
