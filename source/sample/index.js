@@ -1,20 +1,4 @@
-let SlothLogger = require('./index.js');
-
-globals.logger = new SlothLogger.Logger({
-    levels: {
-        info: {
-            'destination': 'logs/info.log'
-        },
-        warn: {
-            'destination': 'logs/warn.log'
-        },
-        crit: {
-            'destination': process.stderr,
-            'dateFormat': 'm/dd/yy h:MM:ss TT Z',
-            'logLevelThreshold': 0
-        }
-    }
-});
+import logger from './logger';
 
 logger.info('Info Line');
 logger.warn('Warn Line');

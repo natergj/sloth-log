@@ -1,4 +1,4 @@
-let logHandler = require('../logHandler.js');
+const logHandler = require('../logHandler.js');
 
 class Aggregator {
     constructor(opts) {

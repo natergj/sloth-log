@@ -1,10 +1,15 @@
-let logHandler = require('../logHandler.js');
-let Aggregator = require('./Aggregator.js');
-let _ = require('lodash');
-let fs = require('fs');
+const logHandler = require('../logHandler.js');
+const Aggregator = require('./Aggregator.js');
+const _merge = require('lodash.merge');
+const fs = require('fs');
+const path = require('path');
+const child_proces = require('child_process');
 
-let streamOpts = { flags: 'a', encoding: 'UTF-8' };
-let defaultLevel = {
+const streamOpts = {
+    flags: 'a',
+    encoding: 'UTF-8'
+};
+const defaultLevel = {
     'destination': process.stdout,
     'dateFormat': 'm/dd/yy h:MM:ss TT Z',
     'color': 'gray',
@@ -13,7 +18,7 @@ let defaultLevel = {
     'inspectOptions': {},
     'logLevelThreshold': 4,
     'format': '${logLevelName}[${logDate}][${relativeFilePath}:${line}] ${logMessage}',
-    'aggregator': null   
+    'aggregator': null
 };
 
 class Logger {
@@ -21,30 +26,46 @@ class Logger {
         opts = opts ? opts : {};
 
         // Currently set logLevel
-        this.logLevel = opts && typeof(opts.logLevel) === 'number' ? opts.logLevel : 4;
+        this.logLevel = opts && typeof (opts.logLevel) === 'number' ? opts.logLevel : 4;
 
         this.fileSpecificLogLevels = {};
 
         this.levels = {
-            'error': _.merge({}, 
-                defaultLevel, 
-                { color: 'red', 'logLevelThreshold': 1 }
+            'error': _merge({},
+                defaultLevel, {
+                    color: 'red',
+                    'logLevelThreshold': 1
+                }
             ),
-            'warn': _.merge({}, 
-                defaultLevel, 
-                { color: 'magenta', 'logLevelThreshold': 2 }
+            'warn': _merge({},
+                defaultLevel, {
+                    color: 'magenta',
+                    'logLevelThreshold': 2
+                }
             ),
-            'info': _.merge({}, 
-                defaultLevel, 
-                { color: 'cyan', 'logLevelThreshold': 3 }
+            'info': _merge({},
+                defaultLevel, {
+                    color: 'cyan',
+                    'logLevelThreshold': 3
+                }
             ),
-            'inspect': _.merge({}, 
-                defaultLevel, 
-                { color: 'white', inspect: true, inspectOptions: { showHidden: true, depth: 2, colors: true }, 'logLevelThreshold': 4 }
+            'inspect': _merge({},
+                defaultLevel, {
+                    color: 'white',
+                    inspect: true,
+                    inspectOptions: {
+                        showHidden: true,
+                        depth: 2,
+                        colors: true
+                    },
+                    'logLevelThreshold': 4
+                }
             ),
-            'debug': _.merge({}, 
-                defaultLevel, 
-                { color: 'yellow', 'logLevelThreshold': 4 }
+            'debug': _merge({},
+                defaultLevel, {
+                    color: 'yellow',
+                    'logLevelThreshold': 4
+                }
             )
         };
 
@@ -52,9 +73,9 @@ class Logger {
         if (opts.levels instanceof Object) {
             Object.keys(opts.levels).forEach((l) => {
                 if (this.levels[l]) {
-                    this.levels[l] = _.merge(this.levels[l], opts.levels[l]);
-                } else {    
-                    this.levels[l] = _.merge({}, defaultLevel, opts.levels[l]);
+                    this.levels[l] = _merge(this.levels[l], opts.levels[l]);
+                } else {
+                    this.levels[l] = _merge({}, defaultLevel, opts.levels[l]);
                 }
             });
         }
@@ -64,7 +85,8 @@ class Logger {
 
         // Generate functions with names of levels to handle logs
         Object.keys(this.levels).forEach((l) => {
-            if (typeof(this.levels[l].destination) === 'string') {
+            if (typeof (this.levels[l].destination) === 'string') {
+                child_proces.execSync(`mkdir -p ${path.dirname(this.levels[l].destination)}`);
                 this.levels[l].destination = new fs.createWriteStream(this.levels[l].destination, streamOpts);
             }
 
@@ -85,7 +107,7 @@ class Logger {
 
     setLevelProps(logLevel, props) {
         if (this.levels[logLevel.toLowerCase()]) {
-            this.levels[logLevel.toLowerCase()] = _.merge({}, defaultLevel, this.levels[logLevel.toLowerCase()], props);
+            this.levels[logLevel.toLowerCase()] = _merge({}, defaultLevel, this.levels[logLevel.toLowerCase()], props);
         } else {
             throw new TypeError(`${logLevel} does not exists as an available log level.`);
         }
@@ -107,9 +129,9 @@ class Logger {
         let regEx = /\(([^)]+)\)/;
         let parsedStack = regEx.exec(stacklist) ? regEx.exec(stacklist)[1] : stacklist;
         let stackParts = parsedStack.split(':');
-        let fullFilePath = stackParts[0];   
+        let fullFilePath = stackParts[0];
 
-        this.fileSpecificLogLevels[fullFilePath] = level;     
+        this.fileSpecificLogLevels[fullFilePath] = level;
     }
 }
 
